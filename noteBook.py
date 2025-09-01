@@ -4,15 +4,16 @@ from tkinter import ttk, messagebox
 # Crear ventana principal
 ventanaPrincipal = tk.Tk()
 ventanaPrincipal.title("Libro de Pacientes y Doctores")
-ventanaPrincipal.geometry("350x450")
+ventanaPrincipal.geometry("1430x600")
 ventanaPrincipal.configure(bg="#3ADBFB")
 # Crear contenedor NoteBook (pestañas)
 pestañas = ttk.Notebook(ventanaPrincipal)
 # Crear frames (uno por pestaña)
 framePacientes = ttk.Frame(pestañas)
+frameDoctores = ttk.Frame(pestañas)
 # Agregar pestañas al NoteBook
 pestañas.add(framePacientes, text="Pacientes")
-pestañas.add(ttk.Frame(pestañas), text="Doctores")
+pestañas.add(frameDoctores, text="Doctores")
 # Mostrar las pestañas en la ventana
 pestañas.pack(expand=True, fill="both")
 # Nombre
@@ -26,8 +27,8 @@ labelFechaN.grid(row=1, column=0, padx=5, pady=5, sticky="w")
 fechaN = tk.Entry(framePacientes)
 fechaN.grid(row=1, column=1, padx=5, pady=5, sticky="w")
 # Edad (readonly)
-labelEdad = tk.Label(framePacientes, text=" Edad:")
-labelEdad.grid(row=2, column=0, padx=5, pady=5, sticky="w")
+labelEdadP = tk.Label(framePacientes, text=" Edad:")
+labelEdadP.grid(row=2, column=0, padx=5, pady=5, sticky="w")
 edadP = tk.Entry(framePacientes, state="readonly")
 edadP.grid(row=2, column=1, padx=5, pady=5, sticky="w")
 # Género
@@ -58,4 +59,74 @@ centroM = tk.StringVar()
 centroM.set("Hospital Central") # Valor por defecto
 comboCentroM = ttk.Combobox(framePacientes, values=["Hospital Central", "Clínica Norte","Centro Salud Sur"], textvariable=centroM)
 comboCentroM.grid(row=7, column=1, padx=5, pady=5, sticky="w")
+
+# Frame para los botones
+btnFrame = tk.Frame(framePacientes)
+btnFrame.grid(row=8, column=1, columnspan=2, pady=5, sticky="w")
+# Botón registrar 
+btnRegistrar = tk.Button(btnFrame, text="Registrar",bg="#45D042", fg="white", command="")
+btnRegistrar.grid(row=0, column=0, padx=5)
+# Botón Eliminar
+btnEliminar = tk.Button(btnFrame, text="Eliminar", bg="#E83333", fg="White", command="")
+btnEliminar.grid(row=0, column=1, padx=5)
+# Treeview para mostrar los pacientes
+treeview = ttk.Treeview(framePacientes, columns=("Nombre","FechaN","Edad", "Género", "GrupoS", "TipoS", "CentroM"), show="headings")
+treeview.heading("Nombre", text="Nombre")
+treeview.heading("FechaN", text="Fecha de Nacimiento")
+treeview.heading("Edad", text="Edad")
+treeview.heading("Género", text="Género")
+treeview.heading("GrupoS", text="Grupo Sanguíneo")
+treeview.heading("TipoS", text="Tipo de Seguro")
+treeview.heading("CentroM", text="Centro Médico")
+# Ubicar el Treeview en la cuadrícula, en una fila separada
+treeview.grid(row=9, column=0, columnspan=2, padx=5, pady=10, sticky="nsew")
+# Scrollbar vertical
+scrollY = ttk.Scrollbar(framePacientes, orient="vertical", command=treeview.yview)
+treeview.configure(yscrollcommand=scrollY.set)
+scrollY.grid(row=9, column=2, sticky="ns")
+
+# Frame para Doctores 
+# Nombre
+labelNombreD = tk.Label(frameDoctores, text=" Nombre Completo:")
+labelNombreD.grid(row=0, column=0, padx=5, pady=5, sticky="w")
+nombreD = tk.Entry(frameDoctores)
+nombreD.grid(row=0, column=1, padx=5, pady=5, sticky="w")
+# Especialidad
+labelEspecialidad = tk.Label(frameDoctores, text=" Especialidad:")
+labelEspecialidad.grid(row=1, column=0, padx=5, pady=5, sticky="w")
+especialidad = tk.StringVar()
+comboEspecialidad = ttk.Combobox(frameDoctores, textvariable=especialidad, values=["Cardiología", "Neurología", "Dermatología", "Ginecología"])
+comboEspecialidad.grid(row=1, column=1, padx=5, pady=5, sticky="w")
+# Edad
+labelEdadD = tk.Label(frameDoctores, text=" Edad:")
+labelEdadD.grid(row=2, column=0, padx=5, pady=5, sticky="w")
+edadD = tk.Spinbox(frameDoctores, from_=18, to=100, width=5)
+edadD.grid(row=2, column=1, padx=5, pady=5, sticky="w")
+# Teléfono
+labelTelefono = tk.Label(frameDoctores, text=" Teléfono:")
+labelTelefono.grid(row=3, column=0, padx=5, pady=5, sticky="w")
+telefono = tk.Entry(frameDoctores)
+telefono.grid(row=3, column=1, padx=5, pady=5, sticky="w")
+# Frame para los botones
+btnFrameD = tk.Frame(frameDoctores)
+btnFrameD.grid(row=4, column=1, columnspan=2, pady=5, sticky="w")
+# Botón registrar 
+btnRegistrarD = tk.Button(btnFrameD, text="Registrar",bg="#45D042", fg="white", command="")
+btnRegistrarD.grid(row=0, column=0, padx=5)
+# Botón Eliminar
+btnEliminarD = tk.Button(btnFrameD, text="Eliminar", bg="#E83333", fg="White", command="")
+btnEliminarD.grid(row=0, column=1, padx=5)
+# Treeview para mostrar los doctores
+treeviewD = ttk.Treeview(frameDoctores, columns=("Nombre","Especialidad","Edad", "Teléfono"), show="headings")
+treeviewD.heading("Nombre", text="Nombre")
+treeviewD.heading("Especialidad", text="Especialidad")
+treeviewD.heading("Edad", text="Edad")
+treeviewD.heading("Teléfono", text="Teléfono")
+treeviewD.grid(row=9, column=2, columnspan=2, padx=5, pady=10, sticky="nsew")
+
+scrollYD = ttk.Scrollbar(frameDoctores, orient="vertical", command=treeviewD.yview)
+treeviewD.configure(yscrollcommand=scrollYD.set)
+scrollYD.grid(row=9, column=4, sticky="ns")
+
 ventanaPrincipal.mainloop()
+
