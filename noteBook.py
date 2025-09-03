@@ -1,6 +1,30 @@
 # Importación de librerías 
 import tkinter as tk
+from datetime import datetime
 from tkinter import ttk, messagebox
+# Funcion para enmascarar fecha 
+def enmascararFecha(texto): # Texto 123456absc
+    limpio = "".join(filter(str.isdigit, texto)) # Limpio = 123456
+    formatoFinal = "" # Variable que guardará la fecha en formato válido
+    if len(limpio) > 8: # 01-12-2012
+        limpio = limpio[:8]  # Si limpio tiene más de 8 números, solamente tomará en cuenta los primeros 8
+    if len(limpio) > 4: # 12112  12  -      11-2
+        formatoFinal = f"{limpio[:2]}-{limpio[2:4]}-{limpio[4:]}" 
+    elif len(limpio) > 2: # Limpio = 121 12-1
+        formatoFinal = f"{limpio[:2]}-{limpio[2:]}"
+    else:
+        formatoFinal = limpio
+    if fechaN.get() != formatoFinal:
+        fechaN.delete(0, tk.END)
+        fechaN.insert(0, formatoFinal)
+    if len(fechaN.get()) == 10:
+        fechaActual = datetime.now().date()
+        fechaNacimiento = datetime.strptime(fechaN.get(), "%d-%m-%Y").date()
+        edad = fechaActual.year - fechaNacimiento.year # 2025 - 2012
+        edadVar.set(edad)
+    else:
+        edadVar.set("")
+    return True
 # Crear ventana principal
 ventanaPrincipal = tk.Tk()
 ventanaPrincipal.title("Libro de Pacientes y Doctores")
@@ -26,10 +50,13 @@ labelFechaN = tk.Label(framePacientes, text=" Fecha de Nacimiento:")
 labelFechaN.grid(row=1, column=0, padx=5, pady=5, sticky="w")
 fechaN = tk.Entry(framePacientes)
 fechaN.grid(row=1, column=1, padx=5, pady=5, sticky="w")
+# Variable para la edad
+fechaN.bind('<KeyRelease>', lambda event: enmascararFecha(fechaN.get()))
 # Edad (readonly)
 labelEdadP = tk.Label(framePacientes, text=" Edad:")
 labelEdadP.grid(row=2, column=0, padx=5, pady=5, sticky="w")
-edadP = tk.Entry(framePacientes, state="readonly")
+edadVar = tk.StringVar()
+edadP = tk.Entry(framePacientes, textvariable=edadVar, state="readonly")
 edadP.grid(row=2, column=1, padx=5, pady=5, sticky="w")
 # Género
 labelGenero = tk.Label(framePacientes, text=" Género:")
@@ -127,6 +154,6 @@ treeviewD.grid(row=9, column=2, columnspan=2, padx=5, pady=10, sticky="nsew")
 scrollYD = ttk.Scrollbar(frameDoctores, orient="vertical", command=treeviewD.yview)
 treeviewD.configure(yscrollcommand=scrollYD.set)
 scrollYD.grid(row=9, column=4, sticky="ns")
-
+  
 ventanaPrincipal.mainloop()
 
