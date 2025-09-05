@@ -1,16 +1,20 @@
-# Importación de librerías 
+# Importación de librerías
 import tkinter as tk
 from datetime import datetime
 from tkinter import ttk, messagebox
-# Funcion para enmascarar fecha 
-def enmascararFecha(texto): # Texto 123456absc
-    limpio = "".join(filter(str.isdigit, texto)) # Limpio = 123456
-    formatoFinal = "" # Variable que guardará la fecha en formato válido
-    if len(limpio) > 8: # 01-12-2012
+
+# Lista para almacenar datos de pacientes
+pacienteData = []
+
+# Función para enmascarar fecha
+def enmascararFecha(texto):
+    limpio = "".join(filter(str.isdigit, texto))  # Limpio = 123456
+    formatoFinal = ""  # Variable que guardará la fecha en formato válido
+    if len(limpio) > 8:  # 01-12-2012
         limpio = limpio[:8]  # Si limpio tiene más de 8 números, solamente tomará en cuenta los primeros 8
-    if len(limpio) > 4: # 12112  12  -      11-2
+    if len(limpio) > 4:  # 12112  12  -      11-2
         formatoFinal = f"{limpio[:2]}-{limpio[2:4]}-{limpio[4:]}" 
-    elif len(limpio) > 2: # Limpio = 121 12-1
+    elif len(limpio) > 2:  # Limpio = 121 12-1
         formatoFinal = f"{limpio[:2]}-{limpio[2:]}"
     else:
         formatoFinal = limpio
@@ -20,84 +24,135 @@ def enmascararFecha(texto): # Texto 123456absc
     if len(fechaN.get()) == 10:
         fechaActual = datetime.now().date()
         fechaNacimiento = datetime.strptime(fechaN.get(), "%d-%m-%Y").date()
-        edad = fechaActual.year - fechaNacimiento.year # 2025 - 2012
+        edad = fechaActual.year - fechaNacimiento.year  # 2025 - 2012
         edadVar.set(edad)
     else:
         edadVar.set("")
     return True
+
+# Función para registrar paciente
+def registrarPaciente():
+    # Crear un diccionario con los datos ingresados
+    paciente = {
+        "Nombre": nombreP.get(),
+        "Fecha de Nacimiento": fechaN.get(),
+        "Edad": edadVar.get(),
+        "Género": genero.get(),
+        "Grupo Sanguíneo": entryGrupoS.get(),
+        "Tipo de Seguro": tipoSeguro.get(),
+        "Centro Médico": centroM.get()
+    }
+    # Agregar paciente a la lista
+    pacienteData.append(paciente)
+    # Cargar el Treeview
+    cargarTrevview()
+
+# Función para cargar datos en el Treeview
+def cargarTrevview():
+    # Limpiar el Treeview
+    for paciente in treeview.get_children():
+        treeview.delete(paciente)
+    # Insertar cada paciente
+    for i, item in enumerate(pacienteData):
+        treeview.insert(
+            "", "end", iid=str(i),
+            values=(
+                item["Nombre"],
+                item["Fecha de Nacimiento"],
+                item["Edad"],
+                item["Género"],
+                item["Grupo Sanguíneo"],
+                item["Tipo de Seguro"],
+                item["Centro Médico"]
+            )
+        )
+
 # Crear ventana principal
 ventanaPrincipal = tk.Tk()
 ventanaPrincipal.title("Libro de Pacientes y Doctores")
 ventanaPrincipal.geometry("1430x600")
 ventanaPrincipal.configure(bg="#3ADBFB")
+
 # Crear contenedor NoteBook (pestañas)
 pestañas = ttk.Notebook(ventanaPrincipal)
+
 # Crear frames (uno por pestaña)
 framePacientes = ttk.Frame(pestañas)
 frameDoctores = ttk.Frame(pestañas)
+
 # Agregar pestañas al NoteBook
 pestañas.add(framePacientes, text="Pacientes")
 pestañas.add(frameDoctores, text="Doctores")
+
 # Mostrar las pestañas en la ventana
 pestañas.pack(expand=True, fill="both")
+
 # Nombre
 labelNombre = tk.Label(framePacientes, text=" Nombre Completo:")
 labelNombre.grid(row=0, column=0, padx=5, pady=5, sticky="w")
 nombreP = tk.Entry(framePacientes)
 nombreP.grid(row=0, column=1, padx=5, pady=5, sticky="w")
+
 # Fecha de nacimiento
 labelFechaN = tk.Label(framePacientes, text=" Fecha de Nacimiento:")
 labelFechaN.grid(row=1, column=0, padx=5, pady=5, sticky="w")
 fechaN = tk.Entry(framePacientes)
 fechaN.grid(row=1, column=1, padx=5, pady=5, sticky="w")
-# Variable para la edad
 fechaN.bind('<KeyRelease>', lambda event: enmascararFecha(fechaN.get()))
+
 # Edad (readonly)
 labelEdadP = tk.Label(framePacientes, text=" Edad:")
 labelEdadP.grid(row=2, column=0, padx=5, pady=5, sticky="w")
 edadVar = tk.StringVar()
 edadP = tk.Entry(framePacientes, textvariable=edadVar, state="readonly")
 edadP.grid(row=2, column=1, padx=5, pady=5, sticky="w")
+
 # Género
 labelGenero = tk.Label(framePacientes, text=" Género:")
 labelGenero.grid(row=3, column=0, padx=5, pady=5, sticky="w")
 genero = tk.StringVar()
-genero.set("Masculino") # Valor por defecto
+genero.set("Masculino")  # Valor por defecto
 radioMasculino = ttk.Radiobutton(framePacientes, text="Masculino", variable=genero, value="Masculino")
 radioMasculino.grid(row=3, column=1, padx=5, sticky="w")
 radioFemenino = ttk.Radiobutton(framePacientes, text="Femenino", variable=genero, value="Femenino")
 radioFemenino.grid(row=4, column=1, padx=5, sticky="w")
+
 # Grupo sanguíneo
-albelGrupoS = tk.Label(framePacientes, text=" Grupo Sanguíneo:")
-albelGrupoS.grid(row=5, column=0, padx=5, pady=5, sticky="w")
+labelGrupoS = tk.Label(framePacientes, text=" Grupo Sanguíneo:")
+labelGrupoS.grid(row=5, column=0, padx=5, pady=5, sticky="w")
 entryGrupoS = tk.Entry(framePacientes)
 entryGrupoS.grid(row=5, column=1, padx=5, pady=5, sticky="w")
+
 # Tipo de seguro
 labelTipoS = tk.Label(framePacientes, text=" Tipo de Seguro:")
 labelTipoS.grid(row=6, column=0, padx=5, pady=5, sticky="w")
 tipoSeguro = tk.StringVar()
-tipoSeguro.set("Público") # Valor por defecto
-comboTipoS = ttk.Combobox(framePacientes, values=["Público", "Privado","Ninguno"], textvariable=tipoSeguro)
+tipoSeguro.set("Público")  # Valor por defecto
+comboTipoS = ttk.Combobox(framePacientes, values=["Público", "Privado", "Ninguno"], textvariable=tipoSeguro)
 comboTipoS.grid(row=6, column=1, padx=5, pady=5, sticky="w")
+
 # Tipo de centro médico
 labelCentroM = tk.Label(framePacientes, text=" Centro Médico:")
 labelCentroM.grid(row=7, column=0, padx=5, pady=5, sticky="w")
 centroM = tk.StringVar()
-centroM.set("Hospital Central") # Valor por defecto
-comboCentroM = ttk.Combobox(framePacientes, values=["Hospital Central", "Clínica Norte","Centro Salud Sur"], textvariable=centroM)
+centroM.set("Hospital Central")  # Valor por defecto
+comboCentroM = ttk.Combobox(framePacientes, values=["Hospital Central", "Clínica Norte", "Centro Salud Sur"], textvariable=centroM)
 comboCentroM.grid(row=7, column=1, padx=5, pady=5, sticky="w")
 
 # Frame para los botones
 btnFrame = tk.Frame(framePacientes)
 btnFrame.grid(row=8, column=1, columnspan=2, pady=5, sticky="w")
-# Botón registrar 
-btnRegistrar = tk.Button(btnFrame, text="Registrar",bg="#45D042", fg="white", command="")
+
+# Botón Registrar
+btnRegistrar = tk.Button(btnFrame, text="Registrar", bg="#45D042", fg="white", command=registrarPaciente)
 btnRegistrar.grid(row=0, column=0, padx=5)
+
 # Botón Eliminar
 btnEliminar = tk.Button(btnFrame, text="Eliminar", bg="#E83333", fg="White", command="")
 btnEliminar.grid(row=0, column=1, padx=5)
+
 # Treeview para mostrar los pacientes
-treeview = ttk.Treeview(framePacientes, columns=("Nombre","FechaN","Edad", "Género", "GrupoS", "TipoS", "CentroM"), show="headings")
+treeview = ttk.Treeview(framePacientes, columns=("Nombre", "FechaN", "Edad", "Género", "GrupoS", "TipoS", "CentroM"), show="headings")
 treeview.heading("Nombre", text="Nombre")
 treeview.heading("FechaN", text="Fecha de Nacimiento")
 treeview.heading("Edad", text="Edad")
@@ -105,8 +160,8 @@ treeview.heading("Género", text="Género")
 treeview.heading("GrupoS", text="Grupo Sanguíneo")
 treeview.heading("TipoS", text="Tipo de Seguro")
 treeview.heading("CentroM", text="Centro Médico")
-# Ubicar el Treeview en la cuadrícula, en una fila separada
 treeview.grid(row=9, column=0, columnspan=2, padx=5, pady=10, sticky="nsew")
+
 # Scrollbar vertical
 scrollY = ttk.Scrollbar(framePacientes, orient="vertical", command=treeview.yview)
 treeview.configure(yscrollcommand=scrollY.set)
