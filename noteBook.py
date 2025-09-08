@@ -28,8 +28,41 @@ def enmascararFecha(texto):
         edadVar.set(edad)
     else:
         edadVar.set("")
-    return True
 
+    return True
+# Función para guardar en archivo
+def guardarEnAchivo():
+    with open("paciente.txt", "w", encoding="utf-8") as archivo:
+        for paciente in pacienteData:
+            archivo.write(
+                f"{paciente['Nombre']}|"
+                f"{paciente['Fecha de Nacimiento']}|"
+                f"{paciente['Edad']}|"
+                f"{paciente['Género']}|"
+                f"{paciente['Grupo Sanguíneo']}|"
+                f"{paciente['Tipo de Seguro']}|"
+                f"{paciente['Centro Médico']}\n"
+            )
+def cargaDesdeArchivo():
+    try:
+        with open("paciente.txt", "r", encoding="utf-8") as archivo:
+            pacienteData.clear()
+            for linea in archivo:
+                datos = linea.strip().split("|")
+                if len(datos) == 7:
+                    paciente = {
+                        "Nombre": datos[0],
+                        "Fecha de Nacimiento": datos[1],
+                        "Edad": datos[2],
+                        "Género": datos[3],
+                        "Grupo Sanguíneo": datos[4],
+                        "Tipo de Seguro": datos[5],
+                        "Centro Médico": datos[6]
+                    }
+                    pacienteData.append(paciente)
+        cargarTrevview
+    except FileNotFoundError:
+        open("paciente.txt", "w", encoding="utf-8").close()
 # Función para registrar paciente
 def registrarPaciente():
     # Crear un diccionario con los datos ingresados
@@ -44,6 +77,8 @@ def registrarPaciente():
     }
     # Agregar paciente a la lista
     pacienteData.append(paciente)
+    # Guardar en archivo
+    guardarEnAchivo()
     # Cargar el Treeview
     cargarTrevview()
 
@@ -209,6 +244,7 @@ treeviewD.grid(row=9, column=2, columnspan=2, padx=5, pady=10, sticky="nsew")
 scrollYD = ttk.Scrollbar(frameDoctores, orient="vertical", command=treeviewD.yview)
 treeviewD.configure(yscrollcommand=scrollYD.set)
 scrollYD.grid(row=9, column=4, sticky="ns")
-  
+# Cargar datos desde archivo al iniciar la aplicación
+cargaDesdeArchivo()
 ventanaPrincipal.mainloop()
 
