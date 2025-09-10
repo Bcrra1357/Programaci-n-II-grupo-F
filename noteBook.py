@@ -3,8 +3,9 @@ import tkinter as tk
 from datetime import datetime
 from tkinter import ttk, messagebox
 
-# Lista para almacenar datos de pacientes
-pacienteData = []
+# Lista para almacenar datos de pacientes y doctores
+pacienteDataP = []
+doctorDataD = []
 
 # Función para enmascarar fecha
 def enmascararFecha(texto):
@@ -30,23 +31,35 @@ def enmascararFecha(texto):
         edadVar.set("")
 
     return True
-# Función para guardar en archivo
-def guardarEnAchivo():
+# Función para guardar en archivo (Pacientes)
+def guardarEnArchivoP():
     with open("paciente.txt", "w", encoding="utf-8") as archivo:
-        for paciente in pacienteData:
+        for pacienteP in pacienteDataP:
             archivo.write(
-                f"{paciente['Nombre']}|"
-                f"{paciente['Fecha de Nacimiento']}|"
-                f"{paciente['Edad']}|"
-                f"{paciente['Género']}|"
-                f"{paciente['Grupo Sanguíneo']}|"
-                f"{paciente['Tipo de Seguro']}|"
-                f"{paciente['Centro Médico']}\n"
+                f"{pacienteP['Nombre']}|"
+                f"{pacienteP['Fecha de Nacimiento']}|"
+                f"{pacienteP['Edad']}|"
+                f"{pacienteP['Género']}|"
+                f"{pacienteP['Grupo Sanguíneo']}|"
+                f"{pacienteP['Tipo de Seguro']}|"
+                f"{pacienteP['Centro Médico']}\n"
             )
+
+# Función para guardar en archivo (Doctores)
+def guardarEnArchivoD():
+    with open("Doctores.txt", "w", encoding="utf-8") as archivo:
+        for doctorD in doctorDataD:
+            archivo.write(
+                f"{doctorD['Nombre']}|"
+                f"{doctorD['Especialidad']}|"
+                f"{doctorD['Edad']}|"
+                f"{doctorD['Teléfono']}\n"
+            )
+
 def cargaDesdeArchivo():
     try:
         with open("paciente.txt", "r", encoding="utf-8") as archivo:
-            pacienteData.clear()
+            pacienteDataP.clear()
             for linea in archivo:
                 datos = linea.strip().split("|")
                 if len(datos) == 7:
@@ -59,8 +72,8 @@ def cargaDesdeArchivo():
                         "Tipo de Seguro": datos[5],
                         "Centro Médico": datos[6]
                     }
-                    pacienteData.append(paciente)
-        cargarTrevview
+                    pacienteDataP.append(paciente)
+        cargarTreeview()
     except FileNotFoundError:
         open("paciente.txt", "w", encoding="utf-8").close()
 # Función para registrar paciente
@@ -76,19 +89,31 @@ def registrarPaciente():
         "Centro Médico": centroM.get()
     }
     # Agregar paciente a la lista
-    pacienteData.append(paciente)
+    pacienteDataP.append(paciente)
     # Guardar en archivo
-    guardarEnAchivo()
+    guardarEnArchivoP()
     # Cargar el Treeview
-    cargarTrevview()
+    cargarTreeview()
+def eliminarPaciente():
+    seleccionado = treeview.selection()
+    if not seleccionado:
+        messagebox.showinfo("Eliminar Paciente", "No se ha seleccionado ningún paciente.")
+        return
 
+    indice = int(seleccionado[0])
+    idItem = seleccionado[0]
+    if messagebox.askyesno("Eliminar Paciente", f"¿Estás seguro de que deseas eliminar este paciente '{treeview.item(idItem, 'values')[0]}'?"):
+        del pacienteDataP[indice]
+        guardarEnArchivoP()  # Guardar los cambios en el archivo
+        cargarTreeview()
+        messagebox.showinfo("Paciente Eliminado", "El paciente ha sido eliminado exitosamente.")
 # Función para cargar datos en el Treeview
-def cargarTrevview():
+def cargarTreeview():
     # Limpiar el Treeview
     for paciente in treeview.get_children():
         treeview.delete(paciente)
     # Insertar cada paciente
-    for i, item in enumerate(pacienteData):
+    for i, item in enumerate(pacienteDataP):
         treeview.insert(
             "", "end", iid=str(i),
             values=(
@@ -99,6 +124,58 @@ def cargarTrevview():
                 item["Grupo Sanguíneo"],
                 item["Tipo de Seguro"],
                 item["Centro Médico"]
+            )
+        )
+
+# Función para cargar datos desde archivo (Doctores)
+def cargarDesdeArchivoD():
+    try:
+        with open("Doctores.txt", "r", encoding="utf-8") as archivo:
+            for linea in archivo:
+                datos = linea.strip().split("|")
+                if len(datos) == 4:  # Validar que haya 4 campos
+                    doctorD = {
+                        "Nombre": datos[0],
+                        "Especialidad": datos[1],
+                        "Edad": datos[2],
+                        "Teléfono": datos[3]
+                    }
+                    doctorDataD.append(doctorD)
+        cargarTreeviewD()
+    except FileNotFoundError:
+        messagebox.showwarning("Archivo no encontrado", "El archivo Doctores.txt no existe. Se creará uno nuevo al guardar datos.")
+
+
+# Actualización de la función registrarDoctor para guardar en archivo y actualizar el Treeview
+def registrarDoctor():
+    # Crear un diccionario con los datos ingresados
+    doctorD = {
+        "Nombre": nombreD.get(),
+        "Especialidad": especialidad.get(),
+        "Edad": edadD.get(),
+        "Teléfono": telefono.get()
+    }
+    # Agregar doctor a la lista
+    doctorDataD.append(doctorD)
+    # Guardar en archivo
+    guardarEnArchivoD()
+    # Cargar el Treeview
+    cargarTreeviewD()
+
+# Función para cargar datos en el Treeview (Doctores)
+def cargarTreeviewD():
+    # Limpiar el Treeview
+    for doctorD in treeviewD.get_children():
+        treeviewD.delete(doctorD)
+    # Insertar cada doctor
+    for i, itemD in enumerate(doctorDataD):
+        treeviewD.insert(
+            "", "end", iid=str(i),
+            values=(
+                itemD["Nombre"],
+                itemD["Especialidad"],
+                itemD["Edad"],
+                itemD["Teléfono"]
             )
         )
 
@@ -183,7 +260,7 @@ btnRegistrar = tk.Button(btnFrame, text="Registrar", bg="#45D042", fg="white", c
 btnRegistrar.grid(row=0, column=0, padx=5)
 
 # Botón Eliminar
-btnEliminar = tk.Button(btnFrame, text="Eliminar", bg="#E83333", fg="White", command="")
+btnEliminar = tk.Button(btnFrame, text="Eliminar", bg="#E83333", fg="White", command=eliminarPaciente)
 btnEliminar.grid(row=0, column=1, padx=5)
 
 # Treeview para mostrar los pacientes
@@ -228,7 +305,7 @@ telefono.grid(row=3, column=1, padx=5, pady=5, sticky="w")
 btnFrameD = tk.Frame(frameDoctores)
 btnFrameD.grid(row=4, column=1, columnspan=2, pady=5, sticky="w")
 # Botón registrar 
-btnRegistrarD = tk.Button(btnFrameD, text="Registrar",bg="#45D042", fg="white", command="")
+btnRegistrarD = tk.Button(btnFrameD, text="Registrar",bg="#45D042", fg="white", command=registrarDoctor)
 btnRegistrarD.grid(row=0, column=0, padx=5)
 # Botón Eliminar
 btnEliminarD = tk.Button(btnFrameD, text="Eliminar", bg="#E83333", fg="White", command="")
@@ -246,5 +323,6 @@ treeviewD.configure(yscrollcommand=scrollYD.set)
 scrollYD.grid(row=9, column=4, sticky="ns")
 # Cargar datos desde archivo al iniciar la aplicación
 cargaDesdeArchivo()
+cargarDesdeArchivoD()
 ventanaPrincipal.mainloop()
 
