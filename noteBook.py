@@ -145,7 +145,6 @@ def cargarDesdeArchivoD():
     except FileNotFoundError:
         messagebox.showwarning("Archivo no encontrado", "El archivo Doctores.txt no existe. Se creará uno nuevo al guardar datos.")
 
-
 # Actualización de la función registrarDoctor para guardar en archivo y actualizar el Treeview
 def registrarDoctor():
     # Crear un diccionario con los datos ingresados
@@ -161,6 +160,19 @@ def registrarDoctor():
     guardarEnArchivoD()
     # Cargar el Treeview
     cargarTreeviewD()
+def eliminarDoctor():
+    seleccionado = treeviewD.selection()
+    if not seleccionado:
+        messagebox.showinfo("Eliminar Doctor", "No se ha seleccionado ningún doctor.")
+        return
+
+    indice = int(seleccionado[0])
+    idItem = seleccionado[0]
+    if messagebox.askyesno("Eliminar Doctor", f"¿Estás seguro de que deseas eliminar este doctor '{treeviewD.item(idItem, 'values')[0]}'?"):
+        del doctorDataD[indice]
+        guardarEnArchivoD()  # Guardar los cambios en el archivo
+        cargarTreeviewD()
+        messagebox.showinfo("Doctor Eliminado", "El doctor ha sido eliminado exitosamente.")
 
 # Función para cargar datos en el Treeview (Doctores)
 def cargarTreeviewD():
@@ -308,7 +320,7 @@ btnFrameD.grid(row=4, column=1, columnspan=2, pady=5, sticky="w")
 btnRegistrarD = tk.Button(btnFrameD, text="Registrar",bg="#45D042", fg="white", command=registrarDoctor)
 btnRegistrarD.grid(row=0, column=0, padx=5)
 # Botón Eliminar
-btnEliminarD = tk.Button(btnFrameD, text="Eliminar", bg="#E83333", fg="White", command="")
+btnEliminarD = tk.Button(btnFrameD, text="Eliminar", bg="#E83333", fg="White", command=eliminarDoctor)
 btnEliminarD.grid(row=0, column=1, padx=5)
 # Treeview para mostrar los doctores
 treeviewD = ttk.Treeview(frameDoctores, columns=("Nombre","Especialidad","Edad", "Teléfono"), show="headings")
