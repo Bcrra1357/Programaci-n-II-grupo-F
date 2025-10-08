@@ -1,0 +1,20 @@
+
+        body {
+            font-family: Tahoma, sans-serif;
+            background-color: #3f3f3f;
+            color: #000000;
+            margin: 20px;
+        }
+        table {
+            background-color: rgb(226, 246, 252);
+            text-align: left back;
+            border: 2px solid #3175f5;
+            padding: 10px;
+            width: 80%;
+            /*border-collapse: collapse; */
+            margin: 0 auto;
+        }
+        #Encabezado {
+            color: #ff7935;
+            font-family: Tahoma, sans-serif;
+        }  

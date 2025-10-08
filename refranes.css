@@ -1,0 +1,35 @@
+
+        body {
+            font-family: Tahoma, sans-serif;
+            background-color: #f0f0f0;
+            color: #333;
+            margin: 20px;
+        }
+        h1 {
+            color: #d40f37;
+        }
+        p {
+            font-size: 16px;
+            line-height: 1.5;
+            font-style: italic;
+            color: #0066cc
+        }
+        #XD {
+            color: #f69330;
+            font-weight: italic;
+        }
+        #Verde {
+            color: #40de40;
+            font-style: italic;
+        }
+        .subtitulo {
+            color: #ffffff;
+            background-color: #000000;
+            font-weight: bold;
+            text-decoration: underline;
+        }
+        #© {
+            font-size: 12px;
+            color: #000000a9;
+        }
+    
