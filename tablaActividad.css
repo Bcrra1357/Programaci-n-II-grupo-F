@@ -1,0 +1,17 @@
+/* Estilos específicos para tablaActividad.html */
+body { padding:20px; font-family: Arial, sans-serif; }
+form { max-width:600px; margin:0 auto; background:#fff; padding:16px; border-radius:6px; box-shadow:0 2px 6px rgba(0,0,0,.08); }
+.field { display:flex; gap:10px; align-items:center; margin-bottom:12px; }
+.field label { width:160px; font-weight:600; }
+.field input[type="text"], .field input[type="date"], .field select, .field textarea { flex:1; padding:8px; border:1px solid #ccc; border-radius:4px; }
+.preview-color { width:36px; height:24px; border:1px solid #aaa; display:inline-block; vertical-align:middle; margin-left:6px; border-radius:4px; }
+.actions { text-align:right; }
+button { padding:8px 12px; margin-left:8px; border-radius:4px; border:none; cursor:pointer; }
+button[type="submit"]{ background:#2b7cff; color:#fff; }
+button[type="reset"]{ background:#e0e0e0; }
+
+
+.control-wrapper { flex:1; }
+.multi-options { margin-top:8px; display:flex; gap:12px; align-items:center; }
+.checkbox-label { display:inline-flex; gap:6px; align-items:center; }
+.select-curso { width:100%; padding:8px; border:1px solid #ccc; border-radius:4px; }

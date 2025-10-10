@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1">
+	<title>Formulario - Tabla en clase</title>
+	<link rel="stylesheet" href="estilos.css">
+	<link rel="stylesheet" href="tablaActividad.css">
+</head>
+<body>
+	<form id="miFormulario">
+		<h2>Completar:</h2>
+
+		<div class="field">
+			<label for="color">Color:</label>
+			<input type="color" id="color" name="color" value="#ff0000">
+			<span id="colorPreview" class="preview-color" aria-hidden="true"></span>
+		</div>
+
+		<div class="field">
+			<label for="mensaje">Mensaje:</label>
+			<textarea id="mensaje" name="mensaje" rows="3" placeholder="Escribe un mensaje..."></textarea>
+		</div>
+
+		<div class="field">
+			<label for="lenguaje">Elija una opción:</label>
+			<div class="control-wrapper">
+				<select id="lenguaje" name="lenguaje" required>
+					<option value="" disabled selected>Seleccione</option>
+					<option value="es">Python</option>
+					<option value="en">Html</option>
+					<option value="pt">C++</option>
+					<option value="other">SQL</option>
+				</select>
+				<!-- Sección de opción múltiple (misma fila, debajo del select) -->
+				<div class="multi-options">
+					<label class="checkbox-label"><input type="checkbox" name="niveles" value="1"> 1ro</label>
+					<label class="checkbox-label"><input type="checkbox" name="niveles" value="2"> 2do</label>
+					<label class="checkbox-label"><input type="checkbox" name="niveles" value="3"> 3ro</label>
+				</div>
+			</div>
+		</div>
+
+		<div class="field">
+			<label for="fecha">Elija una fecha:</label>
+			<input type="date" id="fecha" name="fecha">
+		</div>
+
+		<div class="field">
+			<label for="fichero">Elija un Fichero:</label>
+			<input type="file" id="fichero" name="fichero" accept="image/*,application/pdf">
+		</div>
+		<div class="field">
+			<label for="curso">Curso:</label>
+			<div class="control-wrapper">
+				<select id="curso" name="curso" multiple size="4" class="select-curso">
+					<option value="1">1ro</option>
+					<option value="2">2do</option>
+					<option value="3">3ro</option>
+					<option value="4">4to</option>
+				</select>
+			</div>
+		</div>
+
+		<div class="actions">
+			<button type="reset">Borrar</button>
+			<button type="submit">Enviar</button>
+		</div>
+	</form>
+
+	<script>
+		
+		const colorInput = document.getElementById('color');
+		const preview = document.getElementById('colorPreview');
+		function updatePreview(){ preview.style.backgroundColor = colorInput.value; }
+		colorInput.addEventListener('input', updatePreview);
+		updatePreview();
+
+		document.getElementById('miFormulario').addEventListener('submit', function(e){
+			e.preventDefault();
+			const f = e.target;
+			const data = {
+				color: f.color.value,
+				mensaje: f.mensaje.value.trim(),
+				lenguaje: f.lenguaje.value,
+				fecha: f.fecha.value,
+				fichero: f.fichero.files.length ? f.fichero.files[0].name : '(ninguno)'
+			};
+
+			// recoger valores seleccionados del select múltiple #curso
+			const cursoSelect = document.getElementById('curso');
+			if(cursoSelect){
+				const selectedCursos = Array.from(cursoSelect.options).filter(o => o.selected).map(o => o.value);
+				data.curso = selectedCursos;
+			} else {
+				data.curso = [];
+			}
+
+			// recoger checkboxes de niveles (1ro,2do,3ro)
+			const niveles = Array.from(document.querySelectorAll('input[name="niveles"]:checked')).map(i => i.value);
+			data.niveles = niveles;
+			console.log('Formulario (prueba):', data);
+			alert('Formulario recibido en modo prueba. Revise la consola para detalles.');
+		});
+
+		// Inicializar el select multiple de curso: si no hay nada seleccionado, preseleccionar la primera opción
+		function initCursoSelect(){
+			const cursoSelect = document.getElementById('curso');
+			if(!cursoSelect) return;
+			const anySelected = Array.from(cursoSelect.options).some(o => o.selected);
+			if(!anySelected && cursoSelect.options.length) cursoSelect.options[0].selected = true;
+		}
+
+		// Inicializar al cargar
+		initCursoSelect();
+	</script>
+
+
+</body>
+</html>
